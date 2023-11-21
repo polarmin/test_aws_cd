@@ -20,11 +20,11 @@ export default function Home() {
   const { isLoading } = usePlaceList();
   useDetail();
   useWeather();
-  
+
   return (
     <Wrapper>
-      <SideBar isLoading={isLoading || isGetLocation} />
-      <TobBar />
+      {/* <SideBar isLoading={isLoading || isGetLocation} /> */}
+      {/* <TobBar /> */}
       <Section>
         {!search && !id && <Filter />}
         {isGetLocation ? (
