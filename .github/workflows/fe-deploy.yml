@@ -59,8 +59,7 @@ jobs:
           --s3-location bucket=cd-test-deploy-tt,bundleType=zip,key=public/picnic.zip
       - name: deploy script
         run:
-          script: | # 실행할 스크립트
-            cd /home/ubuntu/test_aws_cd
+          script: cd /home/ubuntu/test_aws_cd
             git pull
             pm2 kill
             cd client
