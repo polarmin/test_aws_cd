@@ -52,5 +52,6 @@ jobs:
             echo "> git clone update"  
             cd client
             yarn install
-            pm2 restart yarn --name picnic -- start
+            yarn build
+            pm2 restart picnic
             exit
