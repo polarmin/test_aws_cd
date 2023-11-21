@@ -40,7 +40,7 @@ jobs:
           yarn install
           yarn build
       - name: zip distributions
-        run: zip -r picnic.zip ./client/.next
+        run: zip -r picnic.zip ./client ./appspec.yml ./scripts
       - name: AWS configure credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -57,11 +57,3 @@ jobs:
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name Group
           --s3-location bucket=cd-test-deploy-tt,bundleType=zip,key=public/picnic.zip
-      - name: deploy script
-        run:
-          script: cd /home/ubuntu/test_aws_cd
-            git pull
-            pm2 kill
-            cd client
-            yarn install
-            pm2 start yarn --name picnic -- start
