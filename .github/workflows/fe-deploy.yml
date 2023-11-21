@@ -41,15 +41,15 @@ jobs:
           yarn build
       - name: deploy
         uses: appleboy/ssh-action@master # ssh 접속을 사용
-	        with: # 함께 사용할 것
-	          host: ${{ secrets.AWS_SSH_HOST }}
-            username: ${{ secrets.AWS_SSH_USERNAME }}
-            key: ${{ secrets.AWS_SSH_KEY }}
-	          script: | # 서버에 접속 후 사용 할 스크립트
-	            cd test_aws_cd
-	            git pull
-	            echo "> git clone update"  
-	            cd client
-              yarn install
-	            pm2 restart yarn --name picnic -- start
-	            exit
+        with: # 함께 사용할 것
+          host: ${{ secrets.AWS_SSH_HOST }}
+          username: ${{ secrets.AWS_SSH_USERNAME }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: | # 서버에 접속 후 사용 할 스크립트
+            cd test_aws_cd
+            git pull
+            echo "> git clone update"  
+            cd client
+            yarn install
+            pm2 restart yarn --name picnic -- start
+            exit
