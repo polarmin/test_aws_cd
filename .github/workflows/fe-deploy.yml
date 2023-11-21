@@ -54,5 +54,5 @@ jobs:
             cd client
             yarn install
             yarn build
-            pm2 restart picnic
+            pm2 start yarn --name picnic -- start
             exit
