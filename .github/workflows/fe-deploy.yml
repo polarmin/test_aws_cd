@@ -39,20 +39,21 @@ jobs:
         run: |
           yarn install
           yarn build
-      - name: deploy
-        uses: appleboy/ssh-action@master # ssh 접속을 사용
-        with: # 함께 사용할 것
-          host: ${{ secrets.AWS_SSH_HOST }}
-          username: ${{ secrets.AWS_SSH_USERNAME }}
-          key: ${{ secrets.AWS_SSH_KEY }}
-          port: ${{ secrets.AWS_SSH_PORT }}
-          script: | # 서버에 접속 후 사용 할 스크립트
-            cd test_aws_cd
-            git pull
-            echo "> git clone update"
-            pm2 kill
-            cd client
-            yarn install
-            yarn build
-            pm2 start yarn --name picnic -- start
-            exit
+      - name: zip distributions
+        run: zip -r picnic.zip ./client/.next
+      - name: AWS configure credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./picnic.zip s3://cd-test-deploy-tt/public/
+
+      - name: deploy with AWS codeDeploy
+        run: aws deploy create-deployment
+          --application-name codedeploy-test
+          --deployment-config-name CodeDeployDefault.OneAtATime
+          --deployment-group-name Group
+          --s3-location bucket=cd-test-deploy-tt,bundleType=zip,key=public/picnic.zip
