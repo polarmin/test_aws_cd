@@ -58,7 +58,7 @@ jobs:
           --deployment-group-name Group
           --s3-location bucket=cd-test-deploy-tt,bundleType=zip,key=public/picnic.zip
       - name: deploy script
-        with:
+        run:
           script: | # 실행할 스크립트
             cd /home/ubuntu/test_aws_cd
             git pull
