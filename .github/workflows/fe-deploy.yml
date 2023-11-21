@@ -1,0 +1,68 @@
+name: 프론트엔드 배포
+
+on:
+  push:
+    branches: #target
+      - dev
+      - main
+    paths:
+      - "client/**"
+  pull_request:
+    branches: #target
+      - dev
+      - main
+    paths:
+      - "client/**"
+  workflow_dispatch:
+
+env:
+  NODE_ENV: production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          cache: "yarn"
+          cache-dependency-path: client/yarn.lock
+      - name: Generate Environment Variables File for Production
+        run: |
+          cd client
+          echo "BE_URL=$BE_URL" >> .env.production
+        env:
+          BE_URL: ${{ secrets.BE_URL }}
+      - name: build client files
+        working-directory: ./client
+        run: |
+          yarn install
+          yarn build
+      - name: zip distributions
+        run: zip -r picnic.zip ./client/.next
+      - name: AWS configure credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./picnic.zip s3://cd-test-deploy-tt/public/
+
+      - name: deploy with AWS codeDeploy
+        run: aws deploy create-deployment
+          --application-name codedeploy-test
+          --deployment-config-name CodeDeployDefault.OneAtATime
+          --deployment-group-name Group
+          --s3-location bucket=cd-test-deploy-tt,bundleType=zip,key=public/picnic.zip
+      - name: deploy script
+        with:
+          script: | # 실행할 스크립트
+            cd /home/ubuntu/test_aws_cd
+            git pull
+            pm2 kill
+            cd client
+            yarn install
+            pm2 start yarn --name picnic -- start
