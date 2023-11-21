@@ -5,8 +5,8 @@ import Filter from '@/components/molecules/Filter';
 import Map from '@/components/molecules/Map';
 import PlaceList from '@/components/molecules/PlaceList';
 import Drawer from '@/components/organisms/Drawer';
-// import SideBar from '@/components/organisms/SideBar';
-// import TobBar from '@/components/organisms/TobBar';
+import SideBar from '@/components/organisms/SideBar';
+import TobBar from '@/components/organisms/TobBar';
 import { useDetail } from '@/hooks/useDetail';
 import { usePlaceList } from '@/hooks/usePlaceList';
 import { useQueryString } from '@/hooks/useQueryString';
@@ -23,8 +23,8 @@ export default function Home() {
 
   return (
     <Wrapper>
-      {/* <SideBar isLoading={isLoading || isGetLocation} /> */}
-      {/* <TobBar /> */}
+      <SideBar isLoading={isLoading || isGetLocation} />
+      <TobBar />
       <Section>
         {!search && !id && <Filter />}
         {isGetLocation ? (
